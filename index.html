@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DUS Aşk Takipçisi 💕</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dusty: {
+                            50: '#fff5f7',
+                            100: '#fedee6',
+                            200: '#fcc5d3',
+                            300: '#f99db4',
+                            400: '#f46b8e',
+                            500: '#e8426d',
+                            600: '#d42554',
+                            700: '#b21941',
+                            800: '#94183a',
+                            900: '#7d1835',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #fff5f7; }
+        ::-webkit-scrollbar-thumb { background: #f99db4; border-radius: 4px; }
+
+        /* Floating hearts background animation */
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg) scale(0.8); opacity: 0.9; }
+            100% { transform: translateY(-110vh) rotate(360deg) scale(1.2); opacity: 0; }
+        }
+        .heart-float {
+            position: absolute;
+            color: rgba(244, 107, 142, 0.45);
+            animation: floatUp 7s linear infinite;
+            bottom: -30px;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        /* Gentle Pulse Animation */
+        @keyframes softPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        .animate-soft-pulse { animation: softPulse 3.5s infinite ease-in-out; }
+    </style>
+</head>
+<body class="bg-dusty-50 text-dusty-900 font-sans min-h-screen pb-24 relative overflow-x-hidden selection:bg-dusty-200">
+
+    <!-- SPLASH SCREEN / KARŞILAMA VE EŞLEŞTİRME EKRANI -->
+    <div id="splashScreen" class="fixed inset-0 z-50 bg-gradient-to-br from-dusty-100 via-pink-100 to-rose-200 flex flex-col items-center justify-center p-6 text-center transition-opacity duration-700">
+        <!-- Floating Hearts Container -->
+        <div id="splashHearts" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
+
+        <div class="relative z-10 bg-white/90 backdrop-blur-md p-7 rounded-3xl shadow-2xl max-w-sm w-full border border-dusty-200 animate-soft-pulse">
+            <div class="w-20 h-20 bg-dusty-100 rounded-full flex items-center justify-center mx-auto mb-4 text-dusty-500 text-3xl shadow-inner border border-dusty-200">
+                <i class="fa-solid fa-heart text-dusty-500 animate-bounce"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-dusty-800 mb-1">DUS Aşk Takipçisi</h1>
+            <p class="text-dusty-600 text-xs mb-5">Diş Hekimliği Uzmanlık Sınavı yolculuğunda birlikte başarın! 💕</p>
+
+            <form onsubmit="startApp(event)" class="space-y-3">
+                <div class="text-left">
+                    <label class="block text-[11px] font-semibold text-dusty-600 mb-1">Oda Kodu (İkiniz de Aynı Kodu Girin)</label>
+                    <div class="relative">
+                        <input type="text" id="roomCodeInput" required placeholder="Örn: dus-2025" class="w-full px-3.5 py-2.5 rounded-xl border border-dusty-300 focus:outline-none focus:ring-2 focus:ring-dusty-400 text-sm bg-white uppercase tracking-wider font-mono">
+                        <button type="button" onclick="generateRandomRoom()" class="absolute right-2 top-2 text-xs text-dusty-500 hover:text-dusty-700 px-2 py-1 bg-dusty-100 rounded-md">Rastgele</button>
+                    </div>
+                </div>
+
+                <div class="text-left">
+                    <label class="block text-[11px] font-semibold text-dusty-600 mb-1">Profil Seçin</label>
+                    <select id="userRoleSelect" class="w-full px-3.5 py-2.5 rounded-xl border border-dusty-300 focus:outline-none focus:ring-2 focus:ring-dusty-400 text-sm bg-white font-medium">
+                        <option value="0">1. Profil (Örn: Dr. Yusuf)</option>
+                        <option value="1">2. Profil (Örn: Dr. Yağmur)</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-left">
+                    <div>
+                        <label class="block text-[10px] text-dusty-600">1. Profil Adı</label>
+                        <input type="text" id="u1NameInput" placeholder="Dr. Yusuf" value="Yusuf" class="w-full px-3 py-2 rounded-lg border border-dusty-200 text-xs bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-dusty-600">2. Profil Adı</label>
+                        <input type="text" id="u2NameInput" placeholder="Dr. Yağmur" value="Yağmur" class="w-full px-3 py-2 rounded-lg border border-dusty-200 text-xs bg-white">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 mt-2 bg-gradient-to-r from-dusty-400 to-dusty-600 hover:from-dusty-500 hover:to-dusty-700 text-white font-semibold rounded-xl shadow-lg shadow-dusty-300 transition-all active:scale-95 flex items-center justify-center gap-2 text-sm">
+                    <span>Bağlan ve Başla</span>
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div id="mainApp" class="max-w-md mx-auto min-h-screen flex flex-col relative hidden">
+        
+        <!-- HEADER -->
+        <header class="bg-white/90 backdrop-blur-md sticky top-0 z-30 px-5 py-3.5 border-b border-dusty-200 shadow-sm flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-dusty-100 border border-dusty-200 flex items-center justify-center text-dusty-600 font-bold shadow-sm">
+                    <i class="fa-solid fa-tooth text-lg"></i>
+                </div>
+                <div>
+                    <h2 id="headerTitle" class="font-bold text-dusty-800 text-sm leading-tight">DUS Duo</h2>
+                    <p class="text-[11px] text-dusty-500 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span id="roomCodeDisplay" class="font-mono uppercase text-dusty-600"></span>
+                    </p>
+                </div>
+            </div>
+            
+            <!-- User Selector & Sync Status -->
+            <div class="flex items-center gap-1.5">
+                <div class="flex items-center bg-dusty-100 p-1 rounded-xl text-xs font-medium border border-dusty-200">
+                    <button id="userBtn0" onclick="switchActiveUser(0)" class="px-2.5 py-1 rounded-lg transition-all bg-white text-dusty-800 shadow-sm font-semibold">1</button>
+                    <button id="userBtn1" onclick="switchActiveUser(1)" class="px-2.5 py-1 rounded-lg transition-all text-dusty-500">2</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- CONTENT AREA -->
+        <main class="flex-1 p-4 pb-28">
+            
+            <!-- TAB 1: PLANLARIM -->
+            <section id="tab-planlar" class="tab-content space-y-4">
+                <div class="bg-gradient-to-r from-dusty-400 to-dusty-600 text-white p-5 rounded-3xl shadow-md relative overflow-hidden">
+                    <div class="absolute right-[-10px] bottom-[-10px] text-white/10 text-8xl pointer-events-none">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+                    <h3 class="text-base font-bold mb-1">Haftalık Çalışma Planı 📚</h3>
+                    <p class="text-xs text-dusty-100 mb-4">DUS konularını seçin veya kendi özel ders konularınızı ekleyin!</p>
+                    
+                    <div class="flex items-center justify-between bg-white/20 backdrop-blur-sm px-3.5 py-2 rounded-2xl text-xs font-medium">
+                        <span id="planUserBadge" class="font-semibold">Aktif Profil: Can</span>
+                        <div class="flex gap-1.5">
+                            <button onclick="openCustomSubjectModal()" class="bg-white/90 text-dusty-800 px-2.5 py-1.5 rounded-xl shadow-sm hover:bg-white text-[11px] font-semibold flex items-center gap-1">
+                                <i class="fa-solid fa-pen-to-square"></i> Özel Konu
+                            </button>
+                            <button onclick="openPlanModal()" class="bg-white text-dusty-700 px-3 py-1.5 rounded-xl shadow-sm hover:bg-dusty-50 text-[11px] font-bold flex items-center gap-1">
+                                <i class="fa-solid fa-plus"></i> Konu Seç
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weekly Plan Stats -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-white p-3.5 rounded-2xl border border-dusty-200 shadow-sm">
+                        <span class="text-[11px] text-dusty-500 font-medium">Seçilen Konu</span>
+                        <h4 id="statSelectedCount" class="text-xl font-extrabold text-dusty-800 mt-0.5">0</h4>
+                    </div>
+                    <div class="bg-white p-3.5 rounded-2xl border border-dusty-200 shadow-sm">
+                        <span class="text-[11px] text-dusty-500 font-medium">Tamamlanan</span>
+                        <h4 id="statCompletedCount" class="text-xl font-extrabold text-emerald-600 mt-0.5">0</h4>
+                    </div>
+                </div>
+
+                <!-- Plan List Container -->
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-dusty-800 text-xs">Aktif Konu Hedefleri</h4>
+                    </div>
+                    <div id="weeklyPlanList" class="space-y-2">
+                        <!-- Dynamic rendered list -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: DENEME TAKİP -->
+            <section id="tab-deneme" class="tab-content space-y-4 hidden">
+                <div class="bg-white p-5 rounded-3xl border border-dusty-200 shadow-sm space-y-3">
+                    <div class="flex items-center justify-between border-b border-dusty-100 pb-2">
+                        <h3 class="font-bold text-dusty-800 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-file-signature text-dusty-500"></i> Yeni Deneme Ekle
+                        </h3>
+                        <span class="text-[10px] bg-dusty-100 text-dusty-700 px-2 py-0.5 rounded-full font-semibold">Net = D - (Y/4)</span>
+                    </div>
+
+                    <form id="denemeForm" onsubmit="addDeneme(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-dusty-700 mb-1">Deneme Adı / Yayın</label>
+                            <input type="text" id="denemeAdi" required placeholder="Örn: Klinik DUS Denemesi - 1" class="w-full px-3 py-2 text-xs rounded-xl border border-dusty-200 focus:outline-none focus:ring-2 focus:ring-dusty-400 bg-dusty-50/40">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-dusty-700 mb-1">Doğru Sayısı</label>
+                                <input type="number" id="denemeDogru" required min="0" max="120" placeholder="100" class="w-full px-3 py-2 text-xs rounded-xl border border-dusty-200 focus:outline-none focus:ring-2 focus:ring-dusty-400 bg-dusty-50/40">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-dusty-700 mb-1">Yanlış Sayısı</label>
+                                <input type="number" id="denemeYanlis" required min="0" max="120" placeholder="12" class="w-full px-3 py-2 text-xs rounded-xl border border-dusty-200 focus:outline-none focus:ring-2 focus:ring-dusty-400 bg-dusty-50/40">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-dusty-700 mb-1">Tarih</label>
+                            <input type="date" id="denemeTarih" required class="w-full px-3 py-2 text-xs rounded-xl border border-dusty-200 focus:outline-none focus:ring-2 focus:ring-dusty-400 bg-dusty-50/40">
+                        </div>
+                        <button type="submit" class="w-full py-2.5 bg-dusty-500 hover:bg-dusty-600 text-white font-semibold text-xs rounded-xl shadow-md transition-all">
+                            Denemeyi Kaydet & Net Hesapla
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Net Progress Chart -->
+                <div class="bg-white p-4 rounded-3xl border border-dusty-200 shadow-sm">
+                    <h4 class="font-bold text-dusty-800 text-xs mb-3 flex items-center justify-between">
+                        <span>Net Gelişim Grafiği 📈</span>
+                        <span id="chartActiveUserLabel" class="text-[10px] text-dusty-500 font-normal">Can</span>
+                    </h4>
+                    <div class="w-full h-48 relative">
+                        <canvas id="netChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Deneme History List -->
+                <div class="space-y-2">
+                    <h4 class="font-bold text-dusty-800 text-xs">Geçmiş Denemeler</h4>
+                    <div id="denemeList" class="space-y-2">
+                        <!-- Dynamic List -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: CHALLENGE & LEADERBOARD -->
+            <section id="tab-challenge" class="tab-content space-y-4 hidden">
+                <div class="bg-gradient-to-br from-pink-50 to-rose-100 p-4 rounded-3xl border border-dusty-200 shadow-sm relative overflow-hidden">
+                    <span class="text-[10px] font-bold text-dusty-600 uppercase tracking-wider">Aşk Motivasyonu 💕</span>
+                    <p id="motivationQuoteText" class="text-xs font-medium text-dusty-800 mt-1 italic">"Birlikte attığınız her adım sizi hayalinizdeki diş hekimliği uzmanlığına yaklaştırıyor!"</p>
+                </div>
+
+                <!-- Duo Leaderboard -->
+                <div class="bg-white p-5 rounded-3xl border border-dusty-200 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-dusty-800 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-trophy text-amber-500"></i> Duo Challenge Skor Tablosu
+                        </h3>
+                        <span class="text-[11px] text-dusty-500">Canlı Senkronize</span>
+                    </div>
+
+                    <div id="leaderboardCards" class="space-y-3">
+                        <!-- User 1 Card -->
+                        <div class="p-4 rounded-2xl bg-dusty-50 border border-dusty-200 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-2xl bg-dusty-300 text-white flex items-center justify-center font-bold text-base shadow-sm" id="lbAvatar1">1</div>
+                                <div>
+                                    <h4 class="font-bold text-dusty-900 text-xs" id="lbName1">1. Profil</h4>
+                                    <p class="text-[10px] text-dusty-500" id="lbStats1">0 Pomodoro • 0 Konu</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-lg font-extrabold text-dusty-600" id="lbScore1">0</span>
+                                <span class="text-[10px] text-dusty-500 block">Puan</span>
+                            </div>
+                        </div>
+
+                        <!-- User 2 Card -->
+                        <div class="p-4 rounded-2xl bg-dusty-50 border border-dusty-200 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-2xl bg-pink-300 text-white flex items-center justify-center font-bold text-base shadow-sm" id="lbAvatar2">2</div>
+                                <div>
+                                    <h4 class="font-bold text-dusty-900 text-xs" id="lbName2">2. Profil</h4>
+                                    <p class="text-[10px] text-dusty-500" id="lbStats2">0 Pomodoro • 0 Konu</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-lg font-extrabold text-dusty-600" id="lbScore2">0</span>
+                                <span class="text-[10px] text-dusty-500 block">Puan</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Points Explanation Card -->
+                <div class="bg-white p-4 rounded-3xl border border-dusty-200 shadow-sm">
+                    <h4 class="font-bold text-dusty-800 text-xs mb-2">Puan Sistemi Kuralları 🌟</h4>
+                    <ul class="space-y-1.5 text-[11px] text-dusty-600">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500"></i> Tamamlanan her Pomodoro seansı = <strong>50 Puan</strong></li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500"></i> Tamamlanan haftalık konu = <strong>30 Puan</strong></li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500"></i> Çözülen deneme kaydı = <strong>40 Puan</strong></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- TAB 4: POMODORO (ÖZELLEŞTİRİLEBİLİR SÜRE) -->
+            <section id="tab-pomodoro" class="tab-content space-y-4 hidden">
+                <!-- Custom Time Settings Accordion/Card -->
+                <div class="bg-white p-4 rounded-3xl border border-dusty-200 shadow-sm">
+                    <h4 class="font-bold text-dusty-800 text-xs mb-3 flex items-center justify-between">
+                        <span><i class="fa-solid fa-sliders text-dusty-500 mr-1"></i> Süre Ayarları</span>
+                        <span class="text-[10px] text-dusty-400">İstediğin Süreyi Gir</span>
+                    </h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-semibold text-dusty-600 mb-1">Çalışma (Dakika)</label>
+                            <input type="number" id="customWorkInput" value="40" min="1" max="120" onchange="applyCustomPomoTimes()" class="w-full px-3 py-1.5 text-xs rounded-xl border border-dusty-200 bg-dusty-50 text-center font-bold text-dusty-800">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-semibold text-dusty-600 mb-1">Mola (Dakika)</label>
+                            <input type="number" id="customBreakInput" value="10" min="1" max="60" onchange="applyCustomPomoTimes()" class="w-full px-3 py-1.5 text-xs rounded-xl border border-dusty-200 bg-dusty-50 text-center font-bold text-dusty-800">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-3xl border border-dusty-200 shadow-md text-center relative overflow-hidden">
+                    <!-- Status Badge -->
+                    <div class="inline-flex items-center bg-dusty-100 p-1 rounded-full mb-4 text-xs font-semibold">
+                        <span id="pomoModeBadge" class="px-4 py-1 rounded-full bg-dusty-500 text-white shadow-sm transition-all text-[11px]">DUS Çalışma Seansı</span>
+                    </div>
+
+                    <!-- Who is working selector -->
+                    <div class="mb-4 flex items-center justify-center gap-2">
+                        <span class="text-xs text-dusty-500 font-medium">Sayaç Kimin İçin?</span>
+                        <select id="pomoUserSelect" class="bg-dusty-50 border border-dusty-300 text-xs rounded-xl px-2.5 py-1 font-semibold text-dusty-800 focus:outline-none">
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+
+                    <!-- Timer Display Circle -->
+                    <div class="relative w-44 h-44 mx-auto flex items-center justify-center rounded-full border-8 border-dusty-100 shadow-inner mb-6">
+                        <div class="absolute inset-0 rounded-full border-8 border-dusty-400 opacity-20 animate-pulse"></div>
+                        <h2 id="timerDisplay" class="text-4xl font-extrabold text-dusty-800 tracking-tight font-mono">40:00</h2>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="flex items-center justify-center gap-3">
+                        <button id="pomoStartBtn" onclick="togglePomodoro()" class="px-6 py-3 bg-dusty-500 hover:bg-dusty-600 text-white font-semibold rounded-2xl shadow-md transition-all flex items-center gap-2 text-xs">
+                            <i class="fa-solid fa-play" id="pomoStartIcon"></i> <span id="pomoStartText">Başlat</span>
+                        </button>
+                        <button onclick="resetPomodoro()" class="px-5 py-3 bg-dusty-100 hover:bg-dusty-200 text-dusty-700 font-semibold rounded-2xl transition-all flex items-center gap-2 text-xs">
+                            <i class="fa-solid fa-rotate-right"></i> Sıfırla
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- BOTTOM NAVIGATION BAR -->
+        <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-md border-t border-dusty-200 px-4 py-2.5 z-30 flex items-center justify-around shadow-lg">
+            <button onclick="switchTab('planlar')" id="nav-planlar" class="flex flex-col items-center gap-1 text-dusty-700 font-bold text-xs">
+                <i class="fa-solid fa-calendar-days text-lg"></i>
+                <span>Planlarım</span>
+            </button>
+            <button onclick="switchTab('deneme')" id="nav-deneme" class="flex flex-col items-center gap-1 text-dusty-400 hover:text-dusty-700 transition-all font-medium text-xs">
+                <i class="fa-solid fa-chart-line text-lg"></i>
+                <span>Denemeler</span>
+            </button>
+            <button onclick="switchTab('challenge')" id="nav-challenge" class="flex flex-col items-center gap-1 text-dusty-400 hover:text-dusty-700 transition-all font-medium text-xs">
+                <i class="fa-solid fa-trophy text-lg"></i>
+                <span>Challenge</span>
+            </button>
+            <button onclick="switchTab('pomodoro')" id="nav-pomodoro" class="flex flex-col items-center gap-1 text-dusty-400 hover:text-dusty-700 transition-all font-medium text-xs">
+                <i class="fa-solid fa-stopwatch text-lg"></i>
+                <span>Pomodoro</span>
+            </button>
+        </nav>
+
+    </div>
+
+    <!-- MODAL 1: KONU SEÇİM MODALİ -->
+    <div id="planModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full max-h-[80vh] flex flex-col shadow-2xl overflow-hidden border border-dusty-200">
+            <div class="p-4 bg-dusty-100 border-b border-dusty-200 flex items-center justify-between">
+                <h3 class="font-bold text-dusty-800 text-sm">DUS Konularından Seç</h3>
+                <button onclick="closePlanModal()" class="w-8 h-8 rounded-full bg-white text-dusty-600 flex items-center justify-center shadow-sm">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="p-4 overflow-y-auto flex-1 space-y-4" id="dusSubjectsContainer">
+                <!-- Filled dynamically -->
+            </div>
+
+            <div class="p-3.5 bg-dusty-50 border-t border-dusty-200 flex justify-end gap-2">
+                <button onclick="closePlanModal()" class="px-4 py-2 bg-dusty-200 text-dusty-700 text-xs font-semibold rounded-xl">İptal</button>
+                <button onclick="saveSelectedPlan()" class="px-5 py-2 bg-dusty-500 text-white text-xs font-semibold rounded-xl shadow-sm">Seçilenleri Ekle</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: ÖZEL DERS/KONU EKLEME MODALİ -->
+    <div id="customSubjectModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-dusty-200 overflow-hidden">
+            <div class="p-4 bg-dusty-100 border-b border-dusty-200 flex items-center justify-between">
+                <h3 class="font-bold text-dusty-800 text-sm">Kendin Özel Konu Ekle ✏️</h3>
+                <button onclick="closeCustomSubjectModal()" class="w-8 h-8 rounded-full bg-white text-dusty-600 flex items-center justify-center shadow-sm">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form onsubmit="addCustomSubjectSubmit(event)" class="p-4 space-y-3">
+                <div>
+                    <label class="block text-[11px] font-semibold text-dusty-700 mb-1">Ders Kategori / Tür</label>
+                    <input type="text" id="customCategoryInput" required placeholder="Örn: Klinik Bilimler / Özel Notlar" class="w-full px-3 py-2 text-xs rounded-xl border border-dusty-200 bg-dusty-50">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-dusty-700 mb-1">Konu Adı</label>
+                    <input type="text" id="customSubjectInput" required placeholder="Örn: Sabit Protez Hazırlıkları 3. Bölüm" class="w-full px-3 py-2 text-xs rounded-xl border border-dusty-200 bg-dusty-50">
+                </div>
+
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closeCustomSubjectModal()" class="px-4 py-2 bg-dusty-200 text-dusty-700 text-xs font-semibold rounded-xl">İptal</button>
+                    <button type="submit" class="px-5 py-2 bg-dusty-500 text-white text-xs font-semibold rounded-xl shadow-sm">Plana Ekle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toastNotification" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 bg-dusty-900 text-white px-5 py-3 rounded-2xl shadow-xl text-xs font-medium opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-2">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+        <span id="toastText">İşlem gerçekleştirildi.</span>
+    </div>
+
+    <!-- FIREBASE MODULE & APPLICATION LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase Configuration (Global provided environment or standard setup)
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : { apiKey: "demo", authDomain: "demo.firebaseapp.com", projectId: "demo", storageBucket: "demo.appspot.com" };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'dus-couple-app';
+
+        // Default DUS Subject List
+        const defaultDusSubjects = {
+            "Temel Bilimler": ["Anatomi", "Fizyoloji", "Biyokimya", "Mikrobiyoloji", "Patoloji", "Farmakoloji", "Histoloji-Embriyoloji"],
+            "Klinik Bilimler": ["Protetik Diş Tedavisi", "Restoratif Diş Tedavisi", "Endodonti", "Periodontoloji", "Ortodonti", "Ağız Diş ve Çene Cerrahisi", "Ağız Diş ve Çene Radyolojisi", "Pedodonti"]
+        };
+
+        // App State Structure
+        window.appData = {
+            roomCode: "DUS2025",
+            userRole: 0, // 0: User 1, 1: User 2
+            users: [
+                { name: "Can", points: 0, pomodoros: 0 },
+                { name: "Merve", points: 0, pomodoros: 0 }
+            ],
+            weeklyPlans: [], // { id, userIndex, subject, category, completed }
+            denemeler: [],   // { id, userIndex, name, dogru, yanlis, net, date }
+            customSubjects: defaultDusSubjects
+        };
+
+        let dbUnsubscribe = null;
+        let isAuthReady = false;
+
+        // Authenticate Firebase First
+        async function initAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                isAuthReady = true;
+            } catch(e) {
+                console.warn("Firebase Auth initialized in offline/fallback mode:", e);
+                isAuthReady = true;
+            }
+        }
+        initAuth();
+
+        // Listen for Realtime Sync Changes on Room Code
+        window.connectToRoomSync = function(code) {
+            if (!code) return;
+            const cleanCode = code.toLowerCase().trim();
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', cleanCode);
+
+            if (dbUnsubscribe) dbUnsubscribe();
+
+            dbUnsubscribe = onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data && data.appData) {
+                        // Merge Remote Data into local
+                        window.appData.users = data.appData.users || window.appData.users;
+                        window.appData.weeklyPlans = data.appData.weeklyPlans || [];
+                        window.appData.denemeler = data.appData.denemeler || [];
+                        if (data.appData.customSubjects) {
+                            window.appData.customSubjects = data.appData.customSubjects;
+                        }
+                        window.renderAllUI();
+                    }
+                } else {
+                    // Create initial room state
+                    window.pushStateToCloud();
+                }
+            }, (error) => {
+                console.warn("Firestore Sync listener note:", error);
+            });
+        };
+
+        window.pushStateToCloud = async function() {
+            const cleanCode = window.appData.roomCode.toLowerCase().trim();
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', cleanCode);
+                await setDoc(docRef, {
+                    appData: {
+                        users: window.appData.users,
+                        weeklyPlans: window.appData.weeklyPlans,
+                        denemeler: window.appData.denemeler,
+                        customSubjects: window.appData.customSubjects
+                    },
+                    lastUpdated: Date.now()
+                }, { merge: true });
+            } catch(e) {
+                console.warn("Cloud sync save:", e);
+            }
+            // Always persist locally
+            localStorage.setItem('dus_app_local_state', JSON.stringify(window.appData));
+        };
+    </script>
+
+    <script>
+        // --- UI & Local Logic ---
+
+        // Splash hearts
+        function createSplashHearts() {
+            const container = document.getElementById('splashHearts');
+            for(let i=0; i<15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart-float';
+                heart.innerHTML = '<i class="fa-solid fa-heart"></i>';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.fontSize = (Math.random() * 18 + 12) + 'px';
+                heart.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                heart.style.animationDelay = (Math.random() * 3) + 's';
+                container.appendChild(heart);
+            }
+        }
+
+        function generateRandomRoom() {
+            const code = 'DUS-' + Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('roomCodeInput').value = code;
+        }
+
+        function startApp(e) {
+            if(e) e.preventDefault();
+            const roomCode = document.getElementById('roomCodeInput').value.trim() || "DUS-ROOM";
+            const role = parseInt(document.getElementById('userRoleSelect').value);
+            const u1Name = document.getElementById('u1NameInput').value.trim() || "Can";
+            const u2Name = document.getElementById('u2NameInput').value.trim() || "Merve";
+
+            window.appData.roomCode = roomCode;
+            window.appData.userRole = role;
+            window.appData.users[0].name = u1Name;
+            window.appData.users[1].name = u2Name;
+
+            document.getElementById('splashScreen').classList.add('opacity-0');
+            setTimeout(() => {
+                document.getElementById('splashScreen').style.display = 'none';
+                document.getElementById('mainApp').classList.remove('hidden');
+                
+                // Trigger cloud connection
+                if (window.connectToRoomSync) {
+                    window.connectToRoomSync(roomCode);
+                }
+                initAppUI();
+            }, 600);
+        }
+
+        window.onload = function() {
+            createSplashHearts();
+            document.getElementById('denemeTarih').valueAsDate = new Date();
+            
+            // Check local cache
+            const cached = localStorage.getItem('dus_app_local_state');
+            if (cached) {
+                try {
+                    const parsed = JSON.parse(cached);
+                    if(parsed.roomCode) document.getElementById('roomCodeInput').value = parsed.roomCode;
+                    if(parsed.users) {
+                        document.getElementById('u1NameInput').value = parsed.users[0].name;
+                        document.getElementById('u2NameInput').value = parsed.users[1].name;
+                    }
+                } catch(err){}
+            }
+        };
+
+        function initAppUI() {
+            updateHeaderAndUserBtns();
+            initChart();
+            renderAllUI();
+            populatePomoUserSelect();
+        }
+
+        window.renderAllUI = function() {
+            updateHeaderAndUserBtns();
+            renderWeeklyPlans();
+            renderDenemeler();
+            updateChart();
+            renderLeaderboard();
+        };
+
+        function switchActiveUser(index) {
+            window.appData.userRole = index;
+            updateHeaderAndUserBtns();
+            renderWeeklyPlans();
+            renderDenemeler();
+            updateChart();
+            populatePomoUserSelect();
+        }
+
+        function updateHeaderAndUserBtns() {
+            const role = window.appData.userRole;
+            const uName = window.appData.users[role].name;
+            
+            document.getElementById('headerTitle').innerText = `DUS Duo • ${uName}`;
+            document.getElementById('roomCodeDisplay').innerText = window.appData.roomCode;
+            document.getElementById('planUserBadge').innerText = `Aktif Profil: ${uName}`;
+
+            const btn0 = document.getElementById('userBtn0');
+            const btn1 = document.getElementById('userBtn1');
+
+            btn0.innerText = window.appData.users[0].name;
+            btn1.innerText = window.appData.users[1].name;
+
+            if(role === 0) {
+                btn0.className = "px-2.5 py-1 rounded-lg transition-all bg-white text-dusty-800 shadow-sm font-bold text-xs";
+                btn1.className = "px-2.5 py-1 rounded-lg transition-all text-dusty-500 text-xs";
+            } else {
+                btn1.className = "px-2.5 py-1 rounded-lg transition-all bg-white text-dusty-800 shadow-sm font-bold text-xs";
+                btn0.className = "px-2.5 py-1 rounded-lg transition-all text-dusty-500 text-xs";
+            }
+            document.getElementById('chartActiveUserLabel').innerText = uName;
+        }
+
+        // --- TAB SWITCHER ---
+        function switchTab(tabName) {
+            const tabs = ['planlar', 'deneme', 'challenge', 'pomodoro'];
+            tabs.forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                document.getElementById(`nav-${t}`).className = "flex flex-col items-center gap-1 text-dusty-400 hover:text-dusty-700 transition-all font-medium text-xs";
+            });
+
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            document.getElementById(`nav-${tabName}`).className = "flex flex-col items-center gap-1 text-dusty-700 font-bold text-xs scale-105";
+
+            if(tabName === 'challenge') renderLeaderboard();
+            if(tabName === 'deneme') updateChart();
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toastNotification');
+            document.getElementById('toastText').innerText = msg;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 2500);
+        }
+
+        // --- PLANLARIM LOGIC ---
+        function openPlanModal() {
+            const container = document.getElementById('dusSubjectsContainer');
+            container.innerHTML = '';
+            const customSubjs = window.appData.customSubjects;
+
+            for (const [category, subjects] of Object.entries(customSubjs)) {
+                let catHtml = `<div class="space-y-1.5"><h4 class="font-bold text-[11px] text-dusty-700 uppercase tracking-wider">${category}</h4><div class="grid grid-cols-1 gap-1">`;
+                subjects.forEach(subj => {
+                    catHtml += `
+                        <label class="flex items-center gap-2.5 p-2 rounded-xl bg-dusty-50 hover:bg-dusty-100/70 cursor-pointer transition-all border border-dusty-200/60">
+                            <input type="checkbox" name="subjectCheck" value="${subj}" data-cat="${category}" class="w-4 h-4 text-dusty-600 rounded focus:ring-dusty-400">
+                            <span class="text-xs font-medium text-dusty-800">${subj}</span>
+                        </label>
+                    `;
+                });
+                catHtml += `</div></div>`;
+                container.innerHTML += catHtml;
+            }
+
+            document.getElementById('planModal').classList.remove('hidden');
+        }
+
+        function closePlanModal() { document.getElementById('planModal').classList.add('hidden'); }
+
+        function openCustomSubjectModal() { document.getElementById('customSubjectModal').classList.remove('hidden'); }
+        function closeCustomSubjectModal() { document.getElementById('customSubjectModal').classList.add('hidden'); }
+
+        function addCustomSubjectSubmit(e) {
+            e.preventDefault();
+            const cat = document.getElementById('customCategoryInput').value.trim();
+            const subj = document.getElementById('customSubjectInput').value.trim();
+
+            if (!cat || !subj) return;
+
+            if (!window.appData.customSubjects[cat]) {
+                window.appData.customSubjects[cat] = [];
+            }
+            if (!window.appData.customSubjects[cat].includes(subj)) {
+                window.appData.customSubjects[cat].push(subj);
+            }
+
+            // Direct add to weekly plan
+            window.appData.weeklyPlans.push({
+                id: Date.now(),
+                userIndex: window.appData.userRole,
+                subject: subj,
+                category: cat,
+                completed: false
+            });
+
+            window.pushStateToCloud();
+            closeCustomSubjectModal();
+            renderWeeklyPlans();
+            document.getElementById('customCategoryInput').value = '';
+            document.getElementById('customSubjectInput').value = '';
+            showToast("Özel konu başarıyla eklendi! ✨");
+        }
+
+        function saveSelectedPlan() {
+            const checkboxes = document.querySelectorAll('input[name="subjectCheck"]:checked');
+            if(checkboxes.length === 0) {
+                showToast("Lütfen en az bir konu seçin!");
+                return;
+            }
+
+            checkboxes.forEach(cb => {
+                const subject = cb.value;
+                const category = cb.getAttribute('data-cat');
+                const exists = window.appData.weeklyPlans.some(p => p.userIndex === window.appData.userRole && p.subject === subject);
+                if(!exists) {
+                    window.appData.weeklyPlans.push({
+                        id: Date.now() + Math.random(),
+                        userIndex: window.appData.userRole,
+                        subject: subject,
+                        category: category,
+                        completed: false
+                    });
+                }
+            });
+
+            window.pushStateToCloud();
+            closePlanModal();
+            renderWeeklyPlans();
+            showToast("Seçilen konular plana eklendi!");
+        }
+
+        function renderWeeklyPlans() {
+            const listEl = document.getElementById('weeklyPlanList');
+            const userPlans = window.appData.weeklyPlans.filter(p => p.userIndex === window.appData.userRole);
+
+            document.getElementById('statSelectedCount').innerText = userPlans.length;
+            const completedCount = userPlans.filter(p => p.completed).length;
+            document.getElementById('statCompletedCount').innerText = completedCount;
+
+            if(userPlans.length === 0) {
+                listEl.innerHTML = `
+                    <div class="text-center py-7 bg-white rounded-2xl border border-dusty-200">
+                        <i class="fa-solid fa-book-open text-dusty-300 text-2xl mb-1"></i>
+                        <p class="text-xs text-dusty-500 font-medium">Bu hafta için henüz konu eklenmedi.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = '';
+            userPlans.forEach(plan => {
+                listEl.innerHTML += `
+                    <div class="p-3 bg-white rounded-2xl border border-dusty-200 shadow-sm flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                            <input type="checkbox" ${plan.completed ? 'checked' : ''} onchange="togglePlanComplete(${plan.id})" class="w-4 h-4 text-dusty-600 rounded focus:ring-dusty-400 cursor-pointer">
+                            <div>
+                                <h5 class="text-xs font-bold ${plan.completed ? 'line-through text-dusty-400' : 'text-dusty-800'}">${plan.subject}</h5>
+                                <span class="text-[9px] text-dusty-500 bg-dusty-100 px-2 py-0.5 rounded-md font-medium">${plan.category}</span>
+                            </div>
+                        </div>
+                        <button onclick="deletePlan(${plan.id})" class="text-dusty-300 hover:text-red-500 p-1 text-xs">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        window.togglePlanComplete = function(id) {
+            const plan = window.appData.weeklyPlans.find(p => p.id === id);
+            if(plan) {
+                plan.completed = !plan.completed;
+                if(plan.completed) {
+                    window.appData.users[plan.userIndex].points += 30;
+                    showToast("Konu tamamlandı! (+30 Puan) 🎉");
+                } else {
+                    window.appData.users[plan.userIndex].points = Math.max(0, window.appData.users[plan.userIndex].points - 30);
+                }
+                window.pushStateToCloud();
+                renderWeeklyPlans();
+            }
+        };
+
+        window.deletePlan = function(id) {
+            window.appData.weeklyPlans = window.appData.weeklyPlans.filter(p => p.id !== id);
+            window.pushStateToCloud();
+            renderWeeklyPlans();
+            showToast("Konu kaldırıldı.");
+        };
+
+        // --- TAB 2: DENEME TAKİP LOGIC ---
+        function addDeneme(e) {
+            e.preventDefault();
+            const name = document.getElementById('denemeAdi').value;
+            const dogru = parseFloat(document.getElementById('denemeDogru').value);
+            const yanlis = parseFloat(document.getElementById('denemeYanlis').value);
+            const date = document.getElementById('denemeTarih').value;
+
+            const net = parseFloat((dogru - (yanlis / 4)).toFixed(2));
+
+            window.appData.denemeler.push({
+                id: Date.now(),
+                userIndex: window.appData.userRole,
+                name: name,
+                dogru: dogru,
+                yanlis: yanlis,
+                net: net,
+                date: date
+            });
+
+            window.appData.users[window.appData.userRole].points += 40;
+
+            window.pushStateToCloud();
+            document.getElementById('denemeForm').reset();
+            document.getElementById('denemeTarih').valueAsDate = new Date();
+            renderDenemeler();
+            updateChart();
+            showToast(`Deneme eklendi! Net: ${net} (+40 Puan) 🎯`);
+        }
+
+        function renderDenemeler() {
+            const listEl = document.getElementById('denemeList');
+            const userDenemeler = window.appData.denemeler
+                .filter(d => d.userIndex === window.appData.userRole)
+                .sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            if(userDenemeler.length === 0) {
+                listEl.innerHTML = `
+                    <div class="text-center py-5 bg-white rounded-2xl border border-dusty-200">
+                        <p class="text-xs text-dusty-400">Henüz kaydedilmiş deneme yok.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = '';
+            userDenemeler.forEach(d => {
+                listEl.innerHTML += `
+                    <div class="p-3 bg-white rounded-xl border border-dusty-200 shadow-sm flex items-center justify-between">
+                        <div>
+                            <h5 class="text-xs font-bold text-dusty-800">${d.name}</h5>
+                            <p class="text-[10px] text-dusty-500">${d.date} • D: ${d.dogru} | Y: ${d.yanlis}</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-extrabold text-dusty-600 bg-dusty-100 px-2 py-1 rounded-lg">${d.net} Net</span>
+                            <button onclick="deleteDeneme(${d.id})" class="text-dusty-300 hover:text-red-500 text-xs">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        window.deleteDeneme = function(id) {
+            window.appData.denemeler = window.appData.denemeler.filter(d => d.id !== id);
+            window.pushStateToCloud();
+            renderDenemeler();
+            updateChart();
+            showToast("Deneme silindi.");
+        };
+
+        // Chart.js
+        let netChartInstance = null;
+        function initChart() {
+            const canvas = document.getElementById('netChart');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            netChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Netler',
+                        data: [],
+                        borderColor: '#e8426d',
+                        backgroundColor: 'rgba(232, 66, 109, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true,
+                        pointBackgroundColor: '#e8426d'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#fff5f7' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function updateChart() {
+            if(!netChartInstance) return;
+            const userDenemeler = window.appData.denemeler
+                .filter(d => d.userIndex === window.appData.userRole)
+                .sort((a,b) => new Date(a.date) - new Date(b.date));
+
+            netChartInstance.data.labels = userDenemeler.map(d => d.date);
+            netChartInstance.data.datasets[0].data = userDenemeler.map(d => d.net);
+            netChartInstance.update();
+        }
+
+        // --- TAB 3: CHALLENGE ---
+        function renderLeaderboard() {
+            const u0 = window.appData.users[0];
+            const u1 = window.appData.users[1];
+
+            document.getElementById('lbName1').innerText = u0.name;
+            document.getElementById('lbName2').innerText = u1.name;
+
+            const u0Plans = window.appData.weeklyPlans.filter(p => p.userIndex === 0 && p.completed).length;
+            const u1Plans = window.appData.weeklyPlans.filter(p => p.userIndex === 1 && p.completed).length;
+
+            document.getElementById('lbStats1').innerText = `${u0.pomodoros || 0} Pomodoro • ${u0Plans} Konu`;
+            document.getElementById('lbStats2').innerText = `${u1.pomodoros || 0} Pomodoro • ${u1Plans} Konu`;
+
+            document.getElementById('lbScore1').innerText = u0.points;
+            document.getElementById('lbScore2').innerText = u1.points;
+
+            if(u0.points >= u1.points) {
+                document.getElementById('lbAvatar1').className = "w-10 h-10 rounded-2xl bg-amber-400 text-white flex items-center justify-center font-bold text-base shadow-md";
+                document.getElementById('lbAvatar2').className = "w-10 h-10 rounded-2xl bg-dusty-300 text-white flex items-center justify-center font-bold text-base shadow-sm";
+                document.getElementById('lbAvatar1').innerHTML = '<i class="fa-solid fa-crown text-xs"></i>';
+                document.getElementById('lbAvatar2').innerText = '2';
+            } else {
+                document.getElementById('lbAvatar2').className = "w-10 h-10 rounded-2xl bg-amber-400 text-white flex items-center justify-center font-bold text-base shadow-md";
+                document.getElementById('lbAvatar1').className = "w-10 h-10 rounded-2xl bg-dusty-300 text-white flex items-center justify-center font-bold text-base shadow-sm";
+                document.getElementById('lbAvatar2').innerHTML = '<i class="fa-solid fa-crown text-xs"></i>';
+                document.getElementById('lbAvatar1').innerText = '2';
+            }
+        }
+
+        // --- TAB 4: POMODORO SAYAÇ ---
+        let workDurationSec = 40 * 60;
+        let breakDurationSec = 10 * 60;
+        let pomoTimeLeft = 40 * 60;
+        let pomoInterval = null;
+        let isRunning = false;
+        let isWorkMode = true;
+
+        function applyCustomPomoTimes() {
+            const wVal = parseInt(document.getElementById('customWorkInput').value) || 40;
+            const bVal = parseInt(document.getElementById('customBreakInput').value) || 10;
+            
+            workDurationSec = wVal * 60;
+            breakDurationSec = bVal * 60;
+
+            if(!isRunning) {
+                pomoTimeLeft = isWorkMode ? workDurationSec : breakDurationSec;
+                updateTimerDisplay();
+            }
+            showToast("Süreler güncellendi!");
+        }
+
+        function populatePomoUserSelect() {
+            const sel = document.getElementById('pomoUserSelect');
+            sel.innerHTML = `
+                <option value="0">${window.appData.users[0].name}</option>
+                <option value="1">${window.appData.users[1].name}</option>
+            `;
+            sel.value = window.appData.userRole;
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(pomoTimeLeft / 60);
+            const secs = pomoTimeLeft % 60;
+            document.getElementById('timerDisplay').innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function togglePomodoro() {
+            if(isRunning) {
+                clearInterval(pomoInterval);
+                isRunning = false;
+                document.getElementById('pomoStartText').innerText = "Devam Et";
+                document.getElementById('pomoStartIcon').className = "fa-solid fa-play";
+            } else {
+                isRunning = true;
+                document.getElementById('pomoStartText').innerText = "Duraklat";
+                document.getElementById('pomoStartIcon').className = "fa-solid fa-pause";
+
+                pomoInterval = setInterval(() => {
+                    if(pomoTimeLeft > 0) {
+                        pomoTimeLeft--;
+                        updateTimerDisplay();
+                    } else {
+                        clearInterval(pomoInterval);
+                        isRunning = false;
+                        handlePomodoroComplete();
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetPomodoro() {
+            clearInterval(pomoInterval);
+            isRunning = false;
+            isWorkMode = true;
+            pomoTimeLeft = workDurationSec;
+            document.getElementById('pomoStartText').innerText = "Başlat";
+            document.getElementById('pomoStartIcon').className = "fa-solid fa-play";
+            document.getElementById('pomoModeBadge').innerText = "DUS Çalışma Seansı";
+            document.getElementById('pomoModeBadge').className = "px-4 py-1 rounded-full bg-dusty-500 text-white shadow-sm transition-all text-[11px]";
+            updateTimerDisplay();
+        }
+
+        function handlePomodoroComplete() {
+            const targetUserIdx = parseInt(document.getElementById('pomoUserSelect').value);
+            
+            if(isWorkMode) {
+                window.appData.users[targetUserIdx].points += 50;
+                window.appData.users[targetUserIdx].pomodoros = (window.appData.users[targetUserIdx].pomodoros || 0) + 1;
+                window.pushStateToCloud();
+                
+                showToast(`Harika! ${window.appData.users[targetUserIdx].name} seansı tamamladı (+50 Puan) 🏆`);
+                
+                // Switch break
+                isWorkMode = false;
+                pomoTimeLeft = breakDurationSec;
+                document.getElementById('pomoModeBadge').innerText = "Mola Zamanı ✨";
+                document.getElementById('pomoModeBadge').className = "px-4 py-1 rounded-full bg-emerald-500 text-white shadow-sm transition-all text-[11px]";
+            } else {
+                isWorkMode = true;
+                pomoTimeLeft = workDurationSec;
+                document.getElementById('pomoModeBadge').innerText = "DUS Çalışma Seansı";
+                document.getElementById('pomoModeBadge').className = "px-4 py-1 rounded-full bg-dusty-500 text-white shadow-sm transition-all text-[11px]";
+                showToast("Mola bitti! Yeni seansa hazırsın 💪");
+            }
+
+            document.getElementById('pomoStartText').innerText = "Başlat";
+            document.getElementById('pomoStartIcon').className = "fa-solid fa-play";
+            updateTimerDisplay();
+        }
+
+        // Global Bindings
+        window.startApp = startApp;
+        window.switchActiveUser = switchActiveUser;
+        window.switchTab = switchTab;
+        window.openPlanModal = openPlanModal;
+        window.closePlanModal = closePlanModal;
+        window.saveSelectedPlan = saveSelectedPlan;
+        window.openCustomSubjectModal = openCustomSubjectModal;
+        window.closeCustomSubjectModal = closeCustomSubjectModal;
+        window.addCustomSubjectSubmit = addCustomSubjectSubmit;
+        window.addDeneme = addDeneme;
+        window.applyCustomPomoTimes = applyCustomPomoTimes;
+        window.togglePomodoro = togglePomodoro;
+        window.resetPomodoro = resetPomodoro;
+        window.generateRandomRoom = generateRandomRoom;
+    </script>
+</body>
+</html>
